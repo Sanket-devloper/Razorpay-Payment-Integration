@@ -20,7 +20,7 @@ import lombok.Data;
 public class Order {
 
     @Id 
-    @GeneratedValue(strategy = GenerationType.UUID) 
+    @Column(name = "id")
     String id;
 
     @Column(name = "amount", nullable = false)

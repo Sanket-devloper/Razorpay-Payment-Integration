@@ -3,13 +3,18 @@ package com.sanket.razorpayorderservice.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sanket.razorpayorderservice.DTO.CreateOrderRequestDTO;
 import com.sanket.razorpayorderservice.DTO.CreateOrderResponseDTO;
+import com.sanket.razorpayorderservice.DTO.UpdateOrderRequestDTO;
+import com.sanket.razorpayorderservice.DTO.UpdateOrderResponseDTO;
 import com.sanket.razorpayorderservice.Service.OrderService;
 
 @RestController
@@ -28,6 +33,14 @@ public class OrderController {
         CreateOrderResponseDTO createOrderResponseDTO = orderService.createOrder(createOrderRequestDTO);
         return new ResponseEntity<>(createOrderResponseDTO, HttpStatus.OK);
     }
+
+    @PutMapping("/orders/{id}") //localhost:8080/v1/orders/{id}
+    public ResponseEntity<UpdateOrderResponseDTO> updateOrder(@PathVariable String id, @RequestBody UpdateOrderRequestDTO updateOrderRequestDTO) {
+        UpdateOrderResponseDTO updateOrderResponseDTO = orderService.updateOrder(id, updateOrderRequestDTO);
+        return new ResponseEntity<>(updateOrderResponseDTO, HttpStatus.OK);
+    }
+
+
 
    
 
