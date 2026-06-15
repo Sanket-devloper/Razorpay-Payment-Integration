@@ -2,6 +2,8 @@ package com.sanket.razorpayorderservice.DTO;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,7 @@ public class FetchAllExpandedPaymentsResponseDTO {
     String status;
     Integer attempts;
     Long createdAt;
-    PaymentDTO payment;
+    PaymentsCollectionDTO payments;
     String offerId;
     Map<String, String> notes;
     TokenDTO token;

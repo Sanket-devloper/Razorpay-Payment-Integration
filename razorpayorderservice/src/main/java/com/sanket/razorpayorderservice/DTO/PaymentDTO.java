@@ -54,4 +54,8 @@ public class PaymentDTO {
     UpiDTO upi;
 
     String vpa;
+
+    public void setInvoiceId(Object invoiceId) {
+           
+    }
 }

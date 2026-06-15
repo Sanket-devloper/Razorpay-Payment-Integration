@@ -1,5 +1,7 @@
 package com.sanket.razorpayorderservice.Entity;
 
+import java.util.Map;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -89,5 +91,15 @@ public class Payment {
 
     @Column(name = "vpa")
     String vpa;
+
+    public Object getInvoiceId() {
+        return null;
+    }
+
+    public Map<String, String> getNotes() {
+        return null;
+    }
+
+   
 
 }

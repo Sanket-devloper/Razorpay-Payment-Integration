@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sanket.razorpayorderservice.DTO.CreateOrderRequestDTO;
@@ -48,6 +49,18 @@ public class OrderController {
         FetchAllOrdersResponseDTO response = orderService.fetchAllOrders();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/order") //localhost:8080/v1/order
+    public ResponseEntity<?> fetchAllOrdersWithPayments(@RequestParam(value = "expand", required = false) String expand) {
+
+        if ("payments".equals(expand)) {
+            return ResponseEntity.ok(
+                    orderService.fetchAllOrdersWithPayments());
+        }
+        // CollectionFetchAllExpandedPaymentResponse response = orderService.fetchAllOrdersWithPayments();
+
+        return ResponseEntity.ok(orderService.fetchAllOrders());
     }
 
 
