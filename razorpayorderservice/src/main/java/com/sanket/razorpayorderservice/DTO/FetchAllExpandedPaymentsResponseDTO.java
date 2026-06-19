@@ -2,7 +2,6 @@ package com.sanket.razorpayorderservice.DTO;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

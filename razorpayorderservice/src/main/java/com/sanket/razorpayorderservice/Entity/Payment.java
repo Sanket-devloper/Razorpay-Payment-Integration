@@ -27,6 +27,8 @@ public class Payment {
 
     String method;
 
+    String invoiceId;
+
     @Column(name = "order_id")
     String orderId;
 

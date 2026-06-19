@@ -32,6 +32,7 @@ public class PaymentDTO {
     Integer fee;
     Integer tax;
 
+    String invoiceId;
     String errorCode;
     String errorDescription;
     String errorSource;
@@ -55,7 +56,5 @@ public class PaymentDTO {
 
     String vpa;
 
-    public void setInvoiceId(Object invoiceId) {
-           
-    }
+    
 }

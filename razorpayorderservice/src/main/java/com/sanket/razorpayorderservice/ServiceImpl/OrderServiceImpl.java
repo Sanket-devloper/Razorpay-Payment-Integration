@@ -3,8 +3,7 @@ package com.sanket.razorpayorderservice.ServiceImpl;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.convert.ReadingConverter;
+
 import org.springframework.stereotype.Service;
 
 import com.sanket.razorpayorderservice.DTO.CollectionFetchAllExpandedPaymentResponse;
@@ -222,7 +221,7 @@ public class OrderServiceImpl implements OrderService {
         paymentDTO.setCurrency(payment.getCurrency());
         paymentDTO.setStatus(payment.getStatus());
         paymentDTO.setOrderId(payment.getOrderId());
-        paymentDTO.setInvoiceId(payment.getInvoiceId());
+        paymentDTO.setInvoiceId(null); // implement if invoiceId exists
         paymentDTO.setInternational(payment.getInternational());
         paymentDTO.setMethod(payment.getMethod());
         paymentDTO.setAmountRefunded(payment.getAmountRefunded());
