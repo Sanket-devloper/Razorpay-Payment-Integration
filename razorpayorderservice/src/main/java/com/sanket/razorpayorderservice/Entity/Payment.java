@@ -2,7 +2,10 @@ package com.sanket.razorpayorderservice.Entity;
 
 import java.util.Map;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -94,14 +97,54 @@ public class Payment {
     @Column(name = "vpa")
     String vpa;
 
-    public Object getInvoiceId() {
-        return null;
-    }
 
-    public Map<String, String> getNotes() {
-        return null;
-    }
+   @jakarta.persistence.ElementCollection
+    Map<String, String> notes;
 
+    @Embedded
+    @AttributeOverrides({
+
+        @AttributeOverride(
+                name = "id",
+                column = @Column(name = "card_embedded_id")),
+
+        @AttributeOverride(
+                name = "entity",
+                column = @Column(name = "card_entity")),
+
+        @AttributeOverride(
+                name = "name",
+                column = @Column(name = "card_name")),
+
+        @AttributeOverride(
+                name = "last4",
+                column = @Column(name = "card_last4")),
+
+        @AttributeOverride(
+                name = "network",
+                column = @Column(name = "card_network")),
+
+        @AttributeOverride(
+                name = "type",
+                column = @Column(name = "card_type")),
+
+        @AttributeOverride(
+                name = "issuer",
+                column = @Column(name = "card_issuer")),
+
+        @AttributeOverride(
+                name = "international",
+                column = @Column(name = "card_international")),
+
+        @AttributeOverride(
+                name = "emi",
+                column = @Column(name = "card_emi")),
+
+        @AttributeOverride(
+                name = "subType",
+                column = @Column(name = "card_sub_type"))
+    })
+    private CardDetails card;
    
 
 }

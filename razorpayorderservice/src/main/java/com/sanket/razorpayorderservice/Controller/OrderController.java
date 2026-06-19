@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sanket.razorpayorderservice.DTO.CreateOrderRequestDTO;
 import com.sanket.razorpayorderservice.DTO.CreateOrderResponseDTO;
 import com.sanket.razorpayorderservice.DTO.FetchAllOrdersResponseDTO;
+import com.sanket.razorpayorderservice.DTO.FetchOrderPaymentsWrapperDTO;
+import com.sanket.razorpayorderservice.DTO.FetchOrderWithIDResponseDTO;
 import com.sanket.razorpayorderservice.DTO.UpdateOrderRequestDTO;
 import com.sanket.razorpayorderservice.DTO.UpdateOrderResponseDTO;
 import com.sanket.razorpayorderservice.Service.OrderService;
@@ -51,21 +53,39 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/order") //localhost:8080/v1/order
-    public ResponseEntity<?> fetchAllOrdersWithPayments(@RequestParam(value = "expand", required = false) String expand) {
+   @GetMapping("/order")
+    public ResponseEntity<?> fetchAllOrdersWithPayments(@RequestParam(value = "expand",required = false) String expand) {
 
         if ("payments".equals(expand)) {
-            return ResponseEntity.ok(
-                    orderService.fetchAllOrdersWithPayments());
+
+            return ResponseEntity.ok(orderService.fetchAllOrdersWithPayments());
         }
-        // CollectionFetchAllExpandedPaymentResponse response = orderService.fetchAllOrdersWithPayments();
+
+        if ("payments.card".equals(expand)) {
+
+            return ResponseEntity.ok(orderService.fetchAllOrdersWithPaymentsAndCard());
+        }
 
         return ResponseEntity.ok(orderService.fetchAllOrders());
     }
 
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<FetchOrderWithIDResponseDTO> fetchOrderWithID(@PathVariable String id) {
 
+        FetchOrderWithIDResponseDTO response = orderService.fetchOrderWithID(id);
 
-   
+        return ResponseEntity.ok(response);
+    }
+
+     
+    @GetMapping("/orders/{id}/payments")
+    public FetchOrderPaymentsWrapperDTO fetchOrderPayments(
+            @PathVariable String id) {
+
+        return orderService.fetchOrderPaymentsWithID(id);
+    }
+
+    
 
     
 }

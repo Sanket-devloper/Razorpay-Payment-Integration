@@ -2,15 +2,24 @@ package com.sanket.razorpayorderservice.ServiceImpl;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sanket.razorpayorderservice.DTO.CardDTO;
+import com.sanket.razorpayorderservice.DTO.CardPaymentCollectionDTO;
+import com.sanket.razorpayorderservice.DTO.CardPaymentDTO;
+import com.sanket.razorpayorderservice.DTO.CollectionFetchAllExpandedCardPaymentsResponse;
 import com.sanket.razorpayorderservice.DTO.CollectionFetchAllExpandedPaymentResponse;
 import com.sanket.razorpayorderservice.DTO.CreateOrderRequestDTO;
 import com.sanket.razorpayorderservice.DTO.CreateOrderResponseDTO;
+import com.sanket.razorpayorderservice.DTO.FetchAllExpandedCardPaymentsResponseDTO;
 import com.sanket.razorpayorderservice.DTO.FetchAllExpandedPaymentsResponseDTO;
 import com.sanket.razorpayorderservice.DTO.FetchAllOrdersResponseDTO;
+import com.sanket.razorpayorderservice.DTO.FetchOrderPaymentsWrapperDTO;
+import com.sanket.razorpayorderservice.DTO.FetchOrderWithIDResponseDTO;
+import com.sanket.razorpayorderservice.DTO.FetchPaymentsResponseDTO;
 import com.sanket.razorpayorderservice.DTO.OrdersResponseDTO;
 import com.sanket.razorpayorderservice.DTO.PaymentDTO;
 import com.sanket.razorpayorderservice.DTO.PaymentsCollectionDTO;
@@ -234,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
         paymentDTO.setVpa(payment.getVpa());
         paymentDTO.setEmail(payment.getEmail());
         paymentDTO.setContact(payment.getContact());
-        paymentDTO.setNotes(payment.getNotes());
+        paymentDTO.setNotes(null); // implement if notes exist
         paymentDTO.setFee(payment.getFee());
         paymentDTO.setTax(payment.getTax());
         paymentDTO.setErrorCode(payment.getErrorCode());
@@ -244,4 +253,293 @@ public class OrderServiceImpl implements OrderService {
         return paymentDTO;
     }
 
-}
+   @Override
+    public CollectionFetchAllExpandedCardPaymentsResponse fetchAllOrdersWithPaymentsAndCard() {
+
+        List<Order> orders = orderRepository.findAll();
+
+        List<FetchAllExpandedCardPaymentsResponseDTO>
+                orderDTOList = new ArrayList<>();
+
+        for (Order order : orders) {
+
+            FetchAllExpandedCardPaymentsResponseDTO orderDTO =
+                    new FetchAllExpandedCardPaymentsResponseDTO();
+
+            orderDTO.setId(order.getId());
+
+            orderDTO.setEntity(order.getEntity());
+
+            orderDTO.setAmount(order.getAmount());
+
+            orderDTO.setAmountPaid(order.getAmount_paid());
+
+            orderDTO.setAmountDue(order.getAmount_due());
+
+            orderDTO.setCurrency(order.getCurrency());
+
+            orderDTO.setReceipt(order.getReceipt());
+
+            orderDTO.setStatus(order.getStatus());
+
+            orderDTO.setAttempts(order.getAttempts());
+
+            orderDTO.setNotes(order.getNotes());
+
+            orderDTO.setCreatedAt(order.getCreated_at());
+
+            // FETCH PAYMENTS
+
+            List<Payment> payments =
+                    paymentRepository
+                            .findByOrderId(order.getId());
+
+            List<CardPaymentDTO> paymentDTOList =
+                    new ArrayList<>();
+
+            for (Payment payment : payments) {
+
+                CardPaymentDTO paymentDTO =
+                        new CardPaymentDTO();
+
+                paymentDTO.setId(payment.getId());
+
+                paymentDTO.setEntity(payment.getEntity());
+
+                paymentDTO.setAmount(payment.getAmount());
+
+                paymentDTO.setCurrency(
+                        payment.getCurrency());
+
+                paymentDTO.setStatus(
+                        payment.getStatus());
+
+                paymentDTO.setMethod(
+                        payment.getMethod());
+
+                paymentDTO.setOrderId(
+                        payment.getOrderId());
+
+                paymentDTO.setDescription(
+                        payment.getDescription());
+
+                paymentDTO.setInternational(
+                        payment.getInternational());
+
+                paymentDTO.setRefundStatus(
+                        payment.getRefundStatus());
+
+                paymentDTO.setAmountRefunded(
+                        payment.getAmountRefunded());
+
+                paymentDTO.setCaptured(
+                        payment.getCaptured());
+
+                paymentDTO.setEmail(
+                        payment.getEmail());
+
+                paymentDTO.setContact(
+                        payment.getContact());
+
+                paymentDTO.setFee(
+                        payment.getFee());
+
+                paymentDTO.setTax(
+                        payment.getTax());
+
+                paymentDTO.setCreatedAt(
+                        payment.getCreatedAt());
+
+                paymentDTO.setCardId(
+                        payment.getCardId());
+
+                // CARD
+
+                if (payment.getCard() != null) {
+
+                    CardDTO cardDTO = new CardDTO();
+
+                    cardDTO.setId(
+                            payment.getCard().getId());
+
+                    cardDTO.setEntity(
+                            payment.getCard().getEntity());
+
+                    cardDTO.setName(
+                            payment.getCard().getName());
+
+                    cardDTO.setLast4(
+                            payment.getCard().getLast4());
+
+                    cardDTO.setNetwork(
+                            payment.getCard().getNetwork());
+
+                    cardDTO.setType(
+                            payment.getCard().getType());
+
+                    cardDTO.setIssuer(
+                            payment.getCard().getIssuer());
+
+                    cardDTO.setInternational(
+                            payment.getCard()
+                                    .getInternational());
+
+                    cardDTO.setEmi(
+                            payment.getCard()
+                                    .getEmi());
+
+                    cardDTO.setSubType(
+                            payment.getCard()
+                                    .getSubType());
+
+                    paymentDTO.setCard(cardDTO);
+                }
+
+                paymentDTOList.add(paymentDTO);
+            }
+
+            CardPaymentCollectionDTO paymentsCollection =
+                    new CardPaymentCollectionDTO();
+
+            paymentsCollection.setEntity("collection");
+
+            paymentsCollection.setCount(
+                    paymentDTOList.size());
+
+            paymentsCollection.setItems(paymentDTOList);
+
+            orderDTO.setPayments(paymentsCollection);
+
+            orderDTOList.add(orderDTO);
+        }
+
+        CollectionFetchAllExpandedCardPaymentsResponse
+                response =
+                new CollectionFetchAllExpandedCardPaymentsResponse();
+
+        response.setEntity("collection");
+
+        response.setCount(orderDTOList.size());
+
+        response.setItems(orderDTOList);
+
+        return response;
+    }
+
+    @Override
+    public FetchOrderWithIDResponseDTO fetchOrderWithID(String id) {
+        
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+
+        FetchOrderWithIDResponseDTO responseDTO = new FetchOrderWithIDResponseDTO();
+
+        responseDTO.setId(order.getId());
+        responseDTO.setEntity(order.getEntity());
+        responseDTO.setAmount(order.getAmount());
+        responseDTO.setAmountPaid(order.getAmount_paid());
+        responseDTO.setAmountDue(order.getAmount_due());
+        responseDTO.setCurrency(order.getCurrency());
+        responseDTO.setReceipt(order.getReceipt());
+        responseDTO.setOfferId(order.getOfferId());
+        responseDTO.setOffers(null); // implement if offers exist
+        responseDTO.setStatus(order.getStatus());
+        responseDTO.setAttempts(order.getAttempts());
+        responseDTO.setNotes(order.getNotes());
+        responseDTO.setCreatedAt(order.getCreated_at());
+
+        return responseDTO;
+    }
+
+    @Override
+    public FetchOrderPaymentsWrapperDTO fetchOrderPaymentsWithID(String id) {
+
+        // Check order exists
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Order not found with id: " + id));
+
+        // Fetch all payments using order id
+        List<Payment> payments = paymentRepository.findByOrderId(order.getId());
+
+        // Convert Payment Entity -> DTO
+        List<FetchPaymentsResponseDTO> paymentDTOs = payments.stream()
+                .map(this::convertToPaymentDTO1)
+                .collect(Collectors.toList());
+
+        // Create Wrapper Response
+        FetchOrderPaymentsWrapperDTO responseDTO =
+                new FetchOrderPaymentsWrapperDTO();
+
+        responseDTO.setEntity("collection");
+
+        responseDTO.setCount(paymentDTOs.size());
+
+        responseDTO.setItems(paymentDTOs);
+
+        return responseDTO;
+    }
+
+    private FetchPaymentsResponseDTO convertToPaymentDTO1(Payment payment) {
+
+        FetchPaymentsResponseDTO dto = new FetchPaymentsResponseDTO();
+
+        dto.setId(payment.getId());
+
+        dto.setEntity(payment.getEntity());
+
+        dto.setAmount(payment.getAmount());
+
+        dto.setCurrency(payment.getCurrency());
+
+        dto.setStatus(payment.getStatus());
+
+        dto.setOrderId(payment.getOrderId());
+
+        dto.setInvoiceId(payment.getInvoiceId());
+
+        dto.setInternational(payment.getInternational());
+
+        dto.setMethod(payment.getMethod());
+
+        dto.setAmountRefunded(payment.getAmountRefunded());
+
+        dto.setRefundStatus(payment.getRefundStatus());
+
+        dto.setCaptured(payment.getCaptured());
+
+        dto.setDescription(payment.getDescription());
+
+        dto.setCardId(payment.getCardId());
+
+        dto.setBank(payment.getBank());
+
+        dto.setWallet(payment.getWallet());
+
+        dto.setVpa(payment.getVpa());
+
+        dto.setEmail(payment.getEmail());
+
+        dto.setContact(payment.getContact());
+
+        dto.setNotes(payment.getNotes());
+
+        dto.setFee(payment.getFee());
+
+        dto.setTax(payment.getTax());
+
+        dto.setErrorCode(payment.getErrorCode());
+
+        dto.setErrorDescription(payment.getErrorDescription());
+
+        dto.setErrorSource(payment.getErrorSource());
+
+        dto.setErrorStep(payment.getErrorStep());
+
+        dto.setErrorReason(payment.getErrorReason());
+
+        dto.setCreatedAt(payment.getCreatedAt());
+
+        return dto;
+    }
+} 

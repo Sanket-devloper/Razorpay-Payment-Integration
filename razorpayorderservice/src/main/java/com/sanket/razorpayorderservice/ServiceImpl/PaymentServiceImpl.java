@@ -5,7 +5,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.sanket.razorpayorderservice.DTO.CapturePaymentRequestDTO;
+import com.sanket.razorpayorderservice.DTO.CardDTO;
 import com.sanket.razorpayorderservice.DTO.PaymentDTO;
+import com.sanket.razorpayorderservice.Entity.CardDetails;
 import com.sanket.razorpayorderservice.Entity.Order;
 import com.sanket.razorpayorderservice.Entity.Payment;
 import com.sanket.razorpayorderservice.Repository.OrderRepository;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+
     private final OrderRepository orderRepository;
 
     @Override
@@ -26,13 +29,14 @@ public class PaymentServiceImpl implements PaymentService {
             String paymentId,
             CapturePaymentRequestDTO requestDTO) {
 
-        // Find order first
+        // FIND ORDER
         Order order = orderRepository.findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow(() ->
                         new RuntimeException("Order not found"));
 
+        // CREATE PAYMENT
         Payment payment = new Payment();
 
         payment.setId(paymentId);
@@ -70,12 +74,40 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setCreatedAt(
                 System.currentTimeMillis() / 1000);
 
+        // CARD ID
         payment.setCardId(
                 "card_" +
-                UUID.randomUUID()
-                        .toString()
-                        .substring(0, 10));
+                        UUID.randomUUID()
+                                .toString()
+                                .substring(0, 10));
 
+        // CARD DETAILS
+        CardDetails card = new CardDetails();
+
+        card.setId(payment.getCardId());
+
+        card.setEntity("card");
+
+        card.setName("Sanket Ganje");
+
+        card.setLast4("4242");
+
+        card.setNetwork("Visa");
+
+        card.setType("debit");
+
+        card.setIssuer("HDFC");
+
+        card.setInternational(false);
+
+        card.setEmi(false);
+
+        card.setSubType("consumer");
+
+        // SET CARD INTO PAYMENT
+        payment.setCard(card);
+
+        // SAVE PAYMENT
         Payment savedPayment =
                 paymentRepository.save(payment);
 
@@ -84,12 +116,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         order.setAmount_due(0);
 
-        order.setStatus("attempted");
+        order.setStatus("paid");
 
         order.setAttempts(order.getAttempts() + 1);
 
         orderRepository.save(order);
 
+        // RETURN RESPONSE
         return convertToDTO(savedPayment);
     }
 
@@ -135,6 +168,43 @@ public class PaymentServiceImpl implements PaymentService {
         dto.setCreatedAt(payment.getCreatedAt());
 
         dto.setCardId(payment.getCardId());
+
+        // CARD DTO
+        if (payment.getCard() != null) {
+
+            CardDTO cardDTO = new CardDTO();
+
+            cardDTO.setId(payment.getCard().getId());
+
+            cardDTO.setEntity(
+                    payment.getCard().getEntity());
+
+            cardDTO.setName(
+                    payment.getCard().getName());
+
+            cardDTO.setLast4(
+                    payment.getCard().getLast4());
+
+            cardDTO.setNetwork(
+                    payment.getCard().getNetwork());
+
+            cardDTO.setType(
+                    payment.getCard().getType());
+
+            cardDTO.setIssuer(
+                    payment.getCard().getIssuer());
+
+            cardDTO.setInternational(
+                    payment.getCard().getInternational());
+
+            cardDTO.setEmi(
+                    payment.getCard().getEmi());
+
+            cardDTO.setSubType(
+                    payment.getCard().getSubType());
+
+            dto.setCard(cardDTO);
+        }
 
         return dto;
     }

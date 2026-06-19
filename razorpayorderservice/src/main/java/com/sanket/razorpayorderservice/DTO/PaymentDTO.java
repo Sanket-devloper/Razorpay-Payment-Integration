@@ -56,5 +56,6 @@ public class PaymentDTO {
 
     String vpa;
 
+    CardDTO card;
     
 }
